@@ -4,21 +4,26 @@ namespace PhotoAlbum;
 
 class Extension extends \Bolt\BaseExtension
 {
+    protected $config;
     /**
      * Extension metadata
      */
-    function info() {
+    public function info()
+    {
         $data = array(
             'name' =>"Photo album",
             'description' => "Page sequentially through albums with {{ AlbumNext() }} and {{ AlbumPrev() }} and {{ Album() }}.",
+            'keywords' => "photo, album, slideshow, gallery",
             'author' => "Lodewijk Evers",
-            'link' => "http://github.com/jadwigo",
-            'version' => "0.2",
-            'required_bolt_version' => "1.0",
-            'highest_bolt_version' => "1.0",
-            'type' => "Twig function",
+            'link' => "https://github.com/jadwigo/bolt-photoalbum",
+            'version' => "0.3",
+            'required_bolt_version' => "1.0.2",
+            'highest_bolt_version' => "1.3",
+            'type' => "General",
             'first_releasedate' => "2013-02-10",
-            'latest_releasedate' => "2013-02-16",
+            'latest_releasedate' => "2013-11-10",
+            'dependencies' => "",
+            'priority' => 10
         );
         return $data;
     }
@@ -26,10 +31,30 @@ class Extension extends \Bolt\BaseExtension
     /**
      * Register Twig functions
      */
-    function initialize() {
+    public function initialize()
+    {
+        if (isset($this->config['photos'])) {
+            // ok
+        }
+        //$yamlparser = new \Symfony\Component\Yaml\Parser();
+        //$this->config = $yamlparser->parse(file_get_contents(__DIR__.'/config.yml'));
+
+        // define twig functions and vars
+        //$this->app['twig']->addExtension(new Visitors_Twig_Extension());
+        //$this->app['twig']->addGlobal('visitor', $recognizedvisitor);
+
         $this->addTwigFunction('AlbumNext', 'twigAlbumNext');
         $this->addTwigFunction('AlbumPrev', 'twigAlbumPrev');
         $this->addTwigFunction('AlbumPhotos', 'twigAlbumAll');
+        
+        /*
+        $this->app['twig']->addFunction('AlbumNext', new \Twig_Function_Function('PhotoAlbum\twigAlbumNext'));
+        $this->app['twig']->addFunction('AlbumPrev', new \Twig_Function_Function('PhotoAlbum\twigAlbumPrev'));
+        $this->app['twig']->addFunction('AlbumPhotos', new \Twig_Function_Function('PhotoAlbum\twigAlbumAll'));
+        */
+     
+        return true;
+
     }
 
     /**
@@ -37,7 +62,8 @@ class Extension extends \Bolt\BaseExtension
      * loads or displays link to next photo in the album
      * based on the current photo
      */
-    function twigAlbumNext($record='', $showlink=true) {
+    function twigAlbumNext($record='', $showlink=true)
+    {
         $label = $this->config['labels']['next'];
         $this->next($record);
         if($showlink) {
@@ -51,7 +77,8 @@ class Extension extends \Bolt\BaseExtension
      * loads or displays link to previous photo in the album
      * based on the current photo
      */
-    function twigAlbumPrev($record='', $showlink=true) {
+    function twigAlbumPrev($record='', $showlink=true)
+    {
         $label = $this->config['labels']['prev'];
         $this->previous($record);
         if($showlink) {
@@ -65,7 +92,8 @@ class Extension extends \Bolt\BaseExtension
      * Loads all photos in an album
      * based on the current album
      */
-    function twigAlbumAll(&$record) {
+    function twigAlbumAll(&$record)
+    {
         $record->photos = $this->getRelatedPhotos($record);
         //return $record->photos;
     }
@@ -73,7 +101,8 @@ class Extension extends \Bolt\BaseExtension
     /**
      * Get the previous record.
      */
-    public function previous(&$record) {
+    public function previous(&$record)
+    {
         $record->previous = $this->getAlbumRelated($record, '<');
         return $record->previous;
     }
@@ -81,7 +110,8 @@ class Extension extends \Bolt\BaseExtension
     /**
      * Get the next record.
      */
-    public function next(&$record) {
+    public function next(&$record)
+    {
         $record->next = $this->getAlbumRelated($record, '>');
         return $record->next;
     }
@@ -90,10 +120,11 @@ class Extension extends \Bolt\BaseExtension
      * Query function to load the precious or next photo
      * from the database
      */
-    public function getAlbumRelated($record, $dirlogical='>') {
+    public function getAlbumRelated($record, $dirlogical='>')
+    {
         // Get the contenttype from first $content
         $contenttype = $record->contenttype['slug'];
-        $prefix = isset($this->app['config']['general']['database']['prefix']) ? $this->app['config']['general']['database']['prefix'] : "bolt_";
+        $prefix = $this->app['config']->get('general/database/prefix', 'bolt_');
         $contenttablename = $prefix . $contenttype;
         $relationtablename = $prefix . "relations";
         $parenttype = $this->config[$contenttype]['relation'];
@@ -142,12 +173,12 @@ class Extension extends \Bolt\BaseExtension
     /**
      * Query function to get all photos in an album
      */
-    public function getRelatedPhotos($record, $dirlogical='>') {
+    public function getRelatedPhotos($record, $dirlogical='>')
+    {
         // Get the contenttype from first $content
         $parenttype = $record->contenttype['slug'];
         $contenttype = $this->config[$parenttype]['relation'];
-
-        $prefix = isset($this->app['config']['general']['database']['prefix']) ? $this->app['config']['general']['database']['prefix'] : "bolt_";
+        $prefix = $this->app['config']->get('general/database/prefix', 'bolt_');
         $contenttablename = $prefix . $contenttype;
         $relationtablename = $prefix . "relations";
         $orderfield = safeString($this->config[$contenttype]['order']);
