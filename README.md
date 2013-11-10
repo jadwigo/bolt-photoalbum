@@ -9,7 +9,7 @@ You can also load all photos in an album with `{{ AlbumPhotos( record ) }}`.
 
 Use `{{ AlbumNext(record) }}` and `{{ AlbumPrev(record) }}` in your `photo.twig` template and use `{{ AlbumPhotos(record) }}` in your `album.twig` template.
 
-Instead of `record` you can also use the current name for the content type in the template.
+Instead of `record` you can also use the current name for the content type (eg. `photo`) in the template.
 
 
 AlbumNext(record, true)
@@ -81,7 +81,7 @@ Example usage for the `album.twig` template:
 
 Preparation
 ===========
-Create content types for photos and albums and give them relations and a weight column. It does nor really matter what you name the types and columns, as long as you use those names in de extension `config.yml`.
+Create content types for photos and albums and give them relations and a weight column. It does nor really matter what you name the types and columns, as long as you also use those names in the `config.yml` file of the extension.
 
 An example for your content types is:
     
