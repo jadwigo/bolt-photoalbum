@@ -33,28 +33,10 @@ class Extension extends \Bolt\BaseExtension
      */
     public function initialize()
     {
-        if (isset($this->config['photos'])) {
-            // ok
-        }
-        //$yamlparser = new \Symfony\Component\Yaml\Parser();
-        //$this->config = $yamlparser->parse(file_get_contents(__DIR__.'/config.yml'));
-
-        // define twig functions and vars
-        //$this->app['twig']->addExtension(new Visitors_Twig_Extension());
-        //$this->app['twig']->addGlobal('visitor', $recognizedvisitor);
-
         $this->addTwigFunction('AlbumNext', 'twigAlbumNext');
         $this->addTwigFunction('AlbumPrev', 'twigAlbumPrev');
         $this->addTwigFunction('AlbumPhotos', 'twigAlbumAll');
-        
-        /*
-        $this->app['twig']->addFunction('AlbumNext', new \Twig_Function_Function('PhotoAlbum\twigAlbumNext'));
-        $this->app['twig']->addFunction('AlbumPrev', new \Twig_Function_Function('PhotoAlbum\twigAlbumPrev'));
-        $this->app['twig']->addFunction('AlbumPhotos', new \Twig_Function_Function('PhotoAlbum\twigAlbumAll'));
-        */
-     
         return true;
-
     }
 
     /**
