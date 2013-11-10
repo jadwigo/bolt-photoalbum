@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Bolt-photoalbum : A photo album extension for Bolt" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Bolt-photoalbum</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jadwigo/bolt-photoalbum">View on GitHub</a>
+
+          <h1 id="project_title">Bolt-photoalbum</h1>
+          <h2 id="project_tagline">A photo album extension for Bolt</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jadwigo/bolt-photoalbum/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jadwigo/bolt-photoalbum/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="photo-album" class="anchor" href="#photo-album"><span class="octicon octicon-link"></span></a>Photo Album</h1>
+
+<p>This is an extension for the <a href="http://bolt.cm">Bolt</a> content management system.</p>
+
+<p>Print links to navigate sequentially through albums with <code>{{ AlbumNext( record ) }}</code> and <code>{{ AlbumPrev( record ) }}</code>.</p>
+
+<p>You can also load all photos in an album with <code>{{ AlbumPhotos( record ) }}</code>.</p>
+
+<p>Use <code>{{ AlbumNext(record) }}</code> and <code>{{ AlbumPrev(record) }}</code> in your <code>photo.twig</code> template and use <code>{{ AlbumPhotos(record) }}</code> in your <code>album.twig</code> template.</p>
+
+<p>Instead of <code>record</code> you can also use the current name for the content type (eg. <code>photo</code>) in the template.</p>
+
+<h1>
+<a name="albumnextrecord-true" class="anchor" href="#albumnextrecord-true"><span class="octicon octicon-link"></span></a>AlbumNext(record, true)</h1>
+
+<p>If you use <code>{{ AlbumNext( record, false ) }}</code> the tag will be silent, and only the built-in <code>record.next</code> will be replaced with the next entry for the album.</p>
+
+<p>Example usage for the <code>photo.twig</code> template.</p>
+
+<pre><code>{{ AlbumNext(record, false) }}
+
+{% if record.next.image != "" %}
+    &lt;a href="{{ record.next.link() }}" title="{{ record.next.title }}" role="next"&gt;
+        &lt;span&gt;&amp;raquo;&lt;/span&gt;
+        &lt;img src="{{ record.next.image|image(100, 100) }}"&gt;
+    &lt;/a&gt;
+{% endif %}
+</code></pre>
+
+<h1>
+<a name="albumprevrecord-true" class="anchor" href="#albumprevrecord-true"><span class="octicon octicon-link"></span></a>AlbumPrev(record, true)</h1>
+
+<p>If you use <code>{{ AlbumPrev( record, false ) }}</code> the tag will be silent, and only the built-in <code>record.previous</code> will be replaced with the previous entry for the album.</p>
+
+<p>Example usage for the <code>photo.twig</code> template.</p>
+
+<pre><code>{{ AlbumPrev(record, false) }}
+
+{% if record.previous.image != "" %}
+    &lt;a href="{{ record.previous.link() }}" title="{{ record.previous.title }}" role="previous"&gt;
+        &lt;span&gt;&amp;laquo;&lt;/span&gt;
+        &lt;img src="{{ record.previous.image|image(100, 100) }}"&gt;
+    &lt;/a&gt;
+{% endif %}
+</code></pre>
+
+<h1>
+<a name="albumphotosrecord" class="anchor" href="#albumphotosrecord"><span class="octicon octicon-link"></span></a>AlbumPhotos(record)</h1>
+
+<p>Loads all photos in an album with <code>{{ AlbumPhotos( record ) }}</code>. This tag is always silent. The new related items will be placed in <code>record.photos</code>.</p>
+
+<p>Example usage for the <code>album.twig</code> template:</p>
+
+<pre><code>&lt;h2&gt;{{ album.title }}&lt;/h2&gt;
+
+{{ album.teaser }}
+
+{# You could also use
+{{ AlbumPhotos(album) }}
+{% set photos = album.photos %} #}
+
+{{ AlbumPhotos(record) }}
+{% set photos = record.photos %}
+
+{% if photos is not empty %}
+    &lt;ul class="related"&gt;
+        {% for photo in photos %}
+            &lt;li&gt;
+                &lt;a href="{{ photo.link }}"&gt;
+                    &lt;h3&gt;{{ photo.title }}&lt;/h3&gt;
+                {% if photo.image != "" %}
+                    &lt;img src="{{ photo.image|thumbnail(200, 200) }}" title="{{ photo.title }}"&gt;
+                {% else %}
+                    {{ photo.title }}
+                {% endif %}
+                &lt;/a&gt;
+            &lt;/li&gt;
+        {%  endfor %}
+    &lt;/ul&gt;
+{% endif %}
+</code></pre>
+
+<h1>
+<a name="preparation" class="anchor" href="#preparation"><span class="octicon octicon-link"></span></a>Preparation</h1>
+
+<p>Create content types for photos and albums and give them relations and a weight column. It does nor really matter what you name the types and columns, as long as you also use those names in the <code>config.yml</code> file of the extension.</p>
+
+<p>An example for your content types is:</p>
+
+<pre><code>photos:
+    name: Photos
+    singular_name: Photo
+    fields:
+        title:
+            type: text
+            class: large
+        slug:
+            type: slug
+            uses: title
+        image:
+            type: image
+        weight:
+            type: number
+    relations:
+        albums:
+            multiple: false
+            label: Select an album
+            order: -id
+    record_template: photo.twig
+    listing_template: listing.twig
+    listing_records: 10
+    sort: weight ASC
+    recordsperpage: 20
+
+albums:
+    name: Albums
+    singular_name: Album
+    fields:
+        title:
+            type: text
+            class: large
+        slug:
+            type: slug
+            uses: title
+        image:
+            type: image
+        weight:
+            type: number
+    relations:
+        photos:
+            multiple: true
+            label: Select photos
+    record_template: album.twig
+    listing_template: albums.twig
+    listing_records: 10
+    sort: weight ASC
+    recordsperpage: 20
+</code></pre>
+
+<p>After you have created some albums and placed some photos in those albums you can use the tags in your templates to create album navigation.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Bolt-photoalbum maintained by <a href="https://github.com/jadwigo">jadwigo</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-193848-19");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
