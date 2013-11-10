@@ -1,6 +1,8 @@
 Photo Album
 ===========
 
+This is an extension for the [Bolt](http://bolt.cm) content management system.
+
 Print links to navigate sequentially through albums with `{{ AlbumNext( record ) }}` and `{{ AlbumPrev( record ) }}`.
 
 You can also load all photos in an album with `{{ AlbumPhotos( record ) }}`.
@@ -133,3 +135,4 @@ An example for your content types is:
         recordsperpage: 20
 
 After you have created some albums and placed some photos in those albums you can use the tags in your templates to create album navigation.
+
