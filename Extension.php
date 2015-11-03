@@ -1,5 +1,5 @@
 <?php
-// Taxonomy listing Extension for Bolt, by Lodewijk Evers
+// PhotoAlbum Extension for Bolt, by Lodewijk Evers
 
 namespace Bolt\Extension\Jadwigo\PhotoAlbum;
 
@@ -17,7 +17,7 @@ class Extension extends \Bolt\BaseExtension
 
 
     /**
-     * Initialize TaxonomyList. Called during bootstrap phase.
+     * Initialize PhotoAlbum. Called during bootstrap phase.
      */
     public function initialize()
     {
@@ -195,7 +195,7 @@ class Extension extends \Bolt\BaseExtension
 
     /**
      * Legacy function
-     * just removes spaces and html tags
+     * just removes spaces and html tags that might have been left in the config
      */
     public function safeString($string) {
         $string = str_replace(' ', '', trim(strip_tags($string)));

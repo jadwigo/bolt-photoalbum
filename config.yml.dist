@@ -5,7 +5,8 @@ labels:
 
 # this is the content type that the photos in the albums use
 # the relation should point to the albums
-# the order is a order by fieldname
+# the order is a order by fieldname, the order defaults to id
+# but you could want to add a field named 'weight' to your content type and use that
 # and the direction is the sortorder for that field
 photos:
     order: id
