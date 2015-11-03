@@ -1,0 +1,42 @@
+{
+	"name" : "jadwigo/photoalbum",
+	"description" : "Print links to navigate sequentially through albums with {{ AlbumNext( record ) }} and {{ AlbumPrev( record ) }}. This uses the bolt relations, but you can also change the order by using a field in your content type.",
+	"type" : "bolt-extension",
+	"keywords" : [
+		"photos",
+		"images",
+		"album"
+	],
+	"require" : {
+		"bolt/bolt" : ">=2.0.0,<3.0.0"
+	},
+	"repositories" : [{
+			"type" : "composer",
+			"name" : "bolt",
+			"url" : "https://extensions.bolt.cm/satis/"
+		}
+	],
+	"authors" : [{
+			"name" : "Lodewijk Evers",
+			"email" : "lodewijk@twokings.nl",
+			"homepage" : "https://github.com/jadwigo"
+		}
+	],
+	"minimum-stability" : "dev",
+	"prefer-stable" : true,
+	"autoload" : {
+		"files" : [
+			"init.php"
+		],
+		"psr-4" : {
+			"Bolt\\Extension\\Jadwigo\\PhotoAlbum\\" : [
+				""
+			]
+		}
+	},
+	"extra" : {
+		"branch-alias" : {
+			"dev-master" : "2.0.*-dev"
+		}
+	}
+}

@@ -1,15 +1,13 @@
 Photo Album
 ===========
 
-This is an extension for the [Bolt](http://bolt.cm) content management system.
-
-Print links to navigate sequentially through albums with `{{ AlbumNext( record ) }}` and `{{ AlbumPrev( record ) }}`.
+Print links to navigate sequentially through albums with `{{ AlbumNext( record ) }}` and `{{ AlbumPrev( record ) }}`. This uses the bolt relations, but you can also change the order by using a field in your content type.
 
 You can also load all photos in an album with `{{ AlbumPhotos( record ) }}`.
 
 Use `{{ AlbumNext(record) }}` and `{{ AlbumPrev(record) }}` in your `photo.twig` template and use `{{ AlbumPhotos(record) }}` in your `album.twig` template.
 
-Instead of `record` you can also use the current name for the content type (eg. `photo`) in the template.
+Instead of `record` you can also use the current name for the content type in the template.
 
 
 AlbumNext(record, true)
@@ -81,7 +79,7 @@ Example usage for the `album.twig` template:
 
 Preparation
 ===========
-Create content types for photos and albums and give them relations and a weight column. It does nor really matter what you name the types and columns, as long as you also use those names in the `config.yml` file of the extension.
+Create content types for photos and albums and give them relations and a weight column. It does not really matter what you name the types and columns, as long as you use those names in the extension `config.yml`.
 
 An example for your content types is:
     
@@ -135,4 +133,3 @@ An example for your content types is:
         recordsperpage: 20
 
 After you have created some albums and placed some photos in those albums you can use the tags in your templates to create album navigation.
-

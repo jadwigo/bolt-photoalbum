@@ -1,14 +1,14 @@
 # these are some automatic labels for the previous and next buttons
 labels:
-    next: "Volgende &gt;"
-    prev: "&lt; Vorige"
+    next: "Next &gt;"
+    prev: "&lt; Previous"
 
 # this is the content type that the photos in the albums use
 # the relation should point to the albums
 # the order is a order by fieldname
 # and the direction is the sortorder for that field
 photos:
-    order: weight
+    order: id
     direction: ASC
     relation: albums
 
@@ -16,6 +16,6 @@ photos:
 # the relation should point to the photos
 # the order is not really used
 albums:
-    order: weight
+    order: id
     direction: ASC
     relation: photos

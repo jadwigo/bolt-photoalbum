@@ -1,42 +1,32 @@
 <?php
-// Photo album pager extension
-namespace PhotoAlbum;
+// Taxonomy listing Extension for Bolt, by Lodewijk Evers
+
+namespace Bolt\Extension\Jadwigo\PhotoAlbum;
 
 class Extension extends \Bolt\BaseExtension
 {
-    protected $config;
+    const NAME = 'PhotoAlbum';
     /**
-     * Extension metadata
+     * Provide default Extension Name
      */
-    public function info()
+
+    public function getName()
     {
-        $data = array(
-            'name' =>"Photo album",
-            'description' => "Page sequentially through albums with {{ AlbumNext() }} and {{ AlbumPrev() }} and {{ Album() }}.",
-            'keywords' => "photo, album, slideshow, gallery",
-            'author' => "Lodewijk Evers",
-            'link' => "https://github.com/jadwigo/bolt-photoalbum",
-            'version' => "0.3",
-            'required_bolt_version' => "1.0.2",
-            'highest_bolt_version' => "1.3",
-            'type' => "General",
-            'first_releasedate' => "2013-02-10",
-            'latest_releasedate' => "2013-11-10",
-            'dependencies' => "",
-            'priority' => 10
-        );
-        return $data;
+        return Extension::NAME;
     }
 
+
     /**
-     * Register Twig functions
+     * Initialize TaxonomyList. Called during bootstrap phase.
      */
     public function initialize()
     {
-        $this->addTwigFunction('AlbumNext', 'twigAlbumNext');
-        $this->addTwigFunction('AlbumPrev', 'twigAlbumPrev');
-        $this->addTwigFunction('AlbumPhotos', 'twigAlbumAll');
-        return true;
+        if ($this->app['config']->getWhichEnd() == 'frontend') {
+            // Add Twig functions
+            $this->addTwigFunction('AlbumNext', 'twigAlbumNext');
+            $this->addTwigFunction('AlbumPrev', 'twigAlbumPrev');
+            $this->addTwigFunction('AlbumPhotos', 'twigAlbumAll');
+        }
     }
 
     /**
@@ -44,7 +34,7 @@ class Extension extends \Bolt\BaseExtension
      * loads or displays link to next photo in the album
      * based on the current photo
      */
-    function twigAlbumNext($record='', $showlink=true)
+    public function twigAlbumNext($record='', $showlink=true)
     {
         $label = $this->config['labels']['next'];
         $this->next($record);
@@ -59,7 +49,7 @@ class Extension extends \Bolt\BaseExtension
      * loads or displays link to previous photo in the album
      * based on the current photo
      */
-    function twigAlbumPrev($record='', $showlink=true)
+    public function twigAlbumPrev($record='', $showlink=true)
     {
         $label = $this->config['labels']['prev'];
         $this->previous($record);
@@ -74,7 +64,7 @@ class Extension extends \Bolt\BaseExtension
      * Loads all photos in an album
      * based on the current album
      */
-    function twigAlbumAll(&$record)
+    public function twigAlbumAll(&$record)
     {
         $record->photos = $this->getRelatedPhotos($record);
         //return $record->photos;
@@ -99,7 +89,7 @@ class Extension extends \Bolt\BaseExtension
     }
 
     /**
-     * Query function to load the precious or next photo
+     * Query function to load the previous or next photo
      * from the database
      */
     public function getAlbumRelated($record, $dirlogical='>')
@@ -110,8 +100,8 @@ class Extension extends \Bolt\BaseExtension
         $contenttablename = $prefix . $contenttype;
         $relationtablename = $prefix . "relations";
         $parenttype = $this->config[$contenttype]['relation'];
-        $orderfield = safeString($this->config[$contenttype]['order']);
-        $direction = isset($this->config[$contenttype]['direction'])?safeString($this->config[$contenttype]['direction']):"ASC";
+        $orderfield = $this->safeString($this->config[$contenttype]['order']);
+        $direction = isset($this->config[$contenttype]['direction'])?$this->safeString($this->config[$contenttype]['direction']):"ASC";
         if($dirlogical!='>') {
             $dirlogical = '<';
             if($direction=='ASC') {
@@ -142,7 +132,7 @@ class Extension extends \Bolt\BaseExtension
                 AND c.$orderfield $dirlogical $thisordervalue
             )
             ORDER BY c.$orderfield $direction
-            LIMIT 0, 1";
+            LIMIT 0, 1; #getAlbumRelated query";
         $entry = $this->app['db']->fetchAll($query);
         if( $entry[0]['id'] ) {
             $id = array('id' => $entry[0]['id']);
@@ -163,8 +153,8 @@ class Extension extends \Bolt\BaseExtension
         $prefix = $this->app['config']->get('general/database/prefix', 'bolt_');
         $contenttablename = $prefix . $contenttype;
         $relationtablename = $prefix . "relations";
-        $orderfield = safeString($this->config[$contenttype]['order']);
-        $direction = isset($this->config[$contenttype]['direction'])?safeString($this->config[$contenttype]['direction']):"ASC";
+        $orderfield = $this->safeString($this->config[$contenttype]['order']);
+        $direction = isset($this->config[$contenttype]['direction'])?$this->safeString($this->config[$contenttype]['direction']):"ASC";
         if($dirlogical!='>') {
             $dirlogical = '<';
             if($direction=='ASC') {
@@ -189,7 +179,7 @@ class Extension extends \Bolt\BaseExtension
                 AND p.from_id = $currentid
                 AND p.from_contenttype = '$parenttype'
             )
-            ORDER BY c.$orderfield $direction";
+            ORDER BY c.$orderfield $direction; #getRelatedPhotos query";
         $entries = $this->app['db']->fetchAll($query);
         if( is_array($entries) ) {
             $relations = array();
@@ -203,4 +193,12 @@ class Extension extends \Bolt\BaseExtension
         return false;
     }
 
+    /**
+     * Legacy function
+     * just removes spaces and html tags
+     */
+    public function safeString($string) {
+        $string = str_replace(' ', '', trim(strip_tags($string)));
+        return $string;
+    }
 }
